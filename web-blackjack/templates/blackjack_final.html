@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Blackjack Game</title>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/casinostyle.css" />
+	</head>
+	
+	<body>
+		<div class="navigation">You are signed in as {{username}}. | <a href=/logout>Logout</a></div>
+		<br />
+		<br />
+		<br />
+		<br />
+		<div class="blackjack-card">
+		{% for card in d_cards %}
+			<img src="/images/{{card}}.png" />
+		{% endfor %}
+		</div>
+		
+		<hr class="solid">
+		
+		<div class="blackjack-card" color="white">
+		{% for card in p_cards %}
+			<img src="/images/{{card}}.png" />
+		{% endfor %}
+		</div>
+		<br />
+		<form method="post" class="message">
+			{{message}}
+			<br />
+			{{chipcount}}
+			<input type="submit" name="OK" value="OK" />
+		</form>
+	</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Login Form</title>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/casinostyle.css" />
+	</head>
+	<body>
+		<div class="authentication">
+		<span style="font-size: 18px; padding: 10px;">Please enter your username and password.<br /></span>
+		<br>
+		<form method="post">
+			<div>Username: <input type="text" name="username" value="{{ username }}" /></div>
+			<div>Password: <input type="password" name="password" value="" /></div>
+			<div style="color:red">{{ error }}</div>
+		    
+			<input type="submit" />
+		</form>
+		</div>
+	</body>
+</html>

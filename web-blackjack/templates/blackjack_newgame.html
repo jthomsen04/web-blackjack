@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Blackjack Game</title>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/casinostyle.css" />
+	</head>
+	
+	<body>	
+		<div class="navigation">You are signed in as {{username}}. | <a href=/logout>Logout</a></div>
+		<br />
+		<br />
+		<div id="bet">
+		<form method="post">
+			{{message}}<br /><br />
+			You have {{chipcount}} chips.<br />
+			Enter your bet (Minimum 5, Maximum 500): 
+			<input type="number" name="quantity" min="5" max="500">
+			<br />
+  			<input type="submit" value="Place Bet" name="play">
+  			<input type="submit" value="Quit" name="quit">
+		</form>
+		</div>
+	</body>
+</html>

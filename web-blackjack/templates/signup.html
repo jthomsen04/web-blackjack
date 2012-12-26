@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Casino Registration</title>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/casinostyle.css" />
+	</head>
+	<body>
+		<div class='authentication'>
+		<span style="font-size: 18px; margin-top: -50px;">Please choose a username and a password.</span>
+		<br>
+		<form method="post" style="padding: 20px;">
+			<span style="padding-right:50px;">Username:</span><input type="text" name="username" value="{{ username }}" style="padding-right: 50px;"/> <div style="color:red"> {{ e_user }}</div>
+			<span style="padding-right:55px;">Password:</span><input type="password" name="password" value="" style="padding-right: 50px;"/> <div style="color:red"> {{ e_pass }}</div>
+			<span style="padding-right:9px;">Verify Password:</span><input type="password" name="verify" value="" style="padding-right: 50px;"/> <div style="color:red">{{ e_ver }}</div>
+			<span style="padding-right:11px;">Email (optional):</span><input type="text" name="email" value="{{ email }}" style="padding-right:50px;"/> <div style="color:red">{{ e_email }}</div>
+			<input type="submit" />
+		</form>
+		</div>
+	</body>
+</html>

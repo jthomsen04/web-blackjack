@@ -1,0 +1,54 @@
+body {
+	font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif;
+	width: 800px;
+	margin: 0 auto;
+	padding: 10px;
+	font-size: 16px;
+	text-align: left;
+	background-image: url('/images/background.jpg');
+	background-color: #000000;
+	background-repeat: no-repeat;
+	background-position: 175px 30px;
+}
+
+.navigation {
+	font-family:Arial, Helvetica, sans-serif;
+	position: absolute;
+	right: 230px;
+	top: 50px;
+	font-size: 14px;
+	color: white;
+}
+
+#front {
+	margin: 190px 260px;
+	color: white;
+}
+
+#bet {
+	margin: 180px 205px;
+	text-align: center;
+	color: white;
+}
+
+.agreement {
+	font-size: 11px;
+}
+
+.blackjack-card {
+	text-align: center;
+}
+
+.message {
+	color: white;
+	position: relative;
+	left: 200px;
+	bottom: 20px;
+}
+
+.authentication {
+	color: white;
+	position: relative;
+	left: 230px;
+	top: 230px;
+}
