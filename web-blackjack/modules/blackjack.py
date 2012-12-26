@@ -1,7 +1,33 @@
 '''
 Created on Oct 4, 2012
+Last updated 12/26/12
+blackjack.py - web-blackjack version
 
-@author: Justin
+Terminal window, object-oriented version of blackjack. 
+
+Supports all aspects of game against dealer playing by house rules:
+    - Player must stand on 21, may hit unlimited times while totalling less than 21
+    - Dealer hits on soft 17, stands on anything higher
+    - Dealer does not play if player busts all hands
+    - Player may split equal cards in hand to yield up to 4 hands
+    - Player may double on any two initial cards
+    - Doubling and splitting "for less" permitted
+    - Doubling receives one card only and the hand then terminates
+    - Double after splitting permitted
+    - Unlimited hitting on split aces
+    - All chip bets must be integers
+    - Blackjack pays 3:2
+    - Insurance pays 2:1
+    - Player with blackjack cannot take "even money" against dealer showing an Ace
+
+Version notes:
+    - Although currently only permitting one player, the data structures are set up so that the game could
+        be easily modified to permit multiple players
+    - Double deck blackjack by default with 500 chips to start. Could easily be set up to player preferences
+        by asking player to define these prior to game beginning.
+
+
+@author: Justin Thomsen
 '''
 import string
 from random import randint
@@ -25,9 +51,10 @@ class Deck(object):
             to mark reshuffle point
         - names dictionary maps values and suits to their spelled out
             titles for the sake of readability in printing to console
-        - NB: Deck does not include AD. AD.png will not render in game due to corrupted file
+        - NB (modified 12/23/12 specifically for the web-blackjack version): 
+            Deck does not include AD. AD.png will not render in game due to corrupted file
             replaced with extra AS. Suit is irrelevant to blackjack, so this is merely a cosmetic
-            alteration
+            alteration put in place until an acceptable image file is obtained.
     '''
     
     def __init__(self, num_decks):        
@@ -535,7 +562,7 @@ class Game(object):
 
 # main Blackjack function for program        
 def __main__():
-    g = Game()
+    g = Game(500)
     
     while True:
         # find out if player can/wants to play a round
@@ -578,66 +605,3 @@ def __main__():
     
     # return chip count of player
     return g.table.players[0].chip_count
-    
-            
-            
-        
-            
-        
-        
-"""
-##################################################################################
-
-
-def cardtest():
-    c = Card('A', 'C')
-    print c.suit
-    print c.value
-
-def decktest():
-    d = Deck(2)
-    ''' 
-    test deck constructor
-    '''
-    for c in d.cards:
-        print (c.value, c.suit)
-    
-    '''
-    test shuffle function
-    '''
-    d.shuffle()
-    for c in d.cards:
-        print (c.value, c.suit)
-
-    '''
-    test deal_generator
-    '''
-    deal = d.deal_generator()
-    c1 = deal.next()
-    c2 = deal.next()
-    c3 = deal.next()
-    print c1.value, c1.suit
-    print c2.value, c2.suit
-    print c3.value, c3.suit
-
-def tabletest():
-    t = Table(3)
-    
-def gametest():
-    g = Game()
-    g.new_hand()
-    
-    '''
-    Test that dealer and player are each dealt two cards at start
-    '''
-    print " dealer cards "
-    for card in g.table.dealer.cards[0]:
-        print card.value, card.suit
-    print g.table.dealer.hand_sum[0]
-    for player in g.table.players:
-        print " player cards "
-        for card in player.cards[0]:
-            print card.value, card.suit
-        print player.hand_sum[0]
-
-"""
