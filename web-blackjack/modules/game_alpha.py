@@ -1,3 +1,10 @@
+'''
+December 26, 2012
+Justin Thomsen
+
+In-development alpha build of Version 3 to incorporate splitting functionality. This version does not currently run.
+'''
+
 from __future__ import division
 from google.appengine.api import memcache
 from modules.base import AppHandler
@@ -7,15 +14,6 @@ import string
 from random import randint
 import blackjack as bj
 
-# Ace of Diamonds does not display
-
-# put a variable in the player which tells if insurance was bought
-# for some reason A A A A J J Q Q totals to 24 right now. ### might be fixed
-# at some point refactor so player only has access to top level functions, can't
-# see the underlying structure of the game
-
-
-# rules page or popup
 class NewBlackjack(AppHandler):
     
     '''
