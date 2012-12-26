@@ -1,3 +1,18 @@
+'''
+December 26, 2012
+Justin Thomsen
+
+Version 2 of Web Blackjack. All functionalities except splitting now supported. Optimized for playing in Chrome.
+
+Changes in version 2:
+    - Insurance routing structure and functionality now complete
+
+Future changes (anticipated version):
+    - Splitting hands (version 3)
+    - Code refactoring to hide lower-level structures from user, preventing direct access to the game state (version 4)
+
+'''
+
 from __future__ import division
 from google.appengine.api import memcache
 from modules.base import AppHandler
@@ -7,14 +22,6 @@ import string
 from random import randint
 import blackjack as bj
 
-# Ace of Diamonds does not display - temp fixed by replacing A of D with A of S in deck
-
-# for some reason A A A A J J Q Q totals to 24 right now. ### might be fixed
-# at some point refactor so player only has access to top level functions, can't
-# see the underlying structure of the game
-
-
-# rules page or popup
 class NewBlackjack(AppHandler):
     
     '''
