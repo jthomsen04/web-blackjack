@@ -37,7 +37,16 @@ class NewBlackjack(AppHandler):
             deck = memcache.get('%s_deck' % user_id)
             #print deck
             if not deck: deck = ['']
-            if not chips: chips = user.chips  
+            if not chips: chips = user.chips
+            
+            message = 'Shuffling the deck!' if len(deck) < 20 else ''
+            if chips < 5.0:
+                chips += 500.0
+                user.chips += 500.0
+                user.chipresets += 1
+                user.put()
+                memcache.set('%s_chips' % user_id, chips, time=3600)
+                message += '\nYou ran out of chips! You have been given 500 more!'  
                       
             if not game_id: # create game if user does not already have one in progress
                 game = BlackjackGames(gameuser = user.username,
@@ -58,15 +67,6 @@ class NewBlackjack(AppHandler):
                 
             else:   # continue if in the middle of a game
                 game = BlackjackGames.get_by_id(int(game_id))
-            
-            message = 'Shuffling the deck!' if len(deck) < 20 else ''
-            if chips < 5:
-                chips += 500.0
-                user.chips += 500.0
-                user.chipresets += 1
-                user.put()
-                memcache.set('%s_chips' % user_id, chips, time=3600)
-                message += '\nYou ran out of chips! Chips reset to 500!'
                 
             self.render('blackjack_newgame.html', username = user.username, chipcount = chips, message = message)
         
@@ -88,9 +88,11 @@ class NewBlackjack(AppHandler):
         # validate game state and user to protect against cheating
         user_id = validate(self.request.cookies.get('user_id'))
         game_id = validate(self.request.cookies.get('game_id'))
+        chips = memcache.get('%s_chips' % user_id)
+        if not chips: chips = user.chips
         
         if user_id and game_id:
-            if play and not bet: # cannot continue without submitting a bet
+            if play and (not bet or float(bet) > chips): # cannot continue without submitting a bet
                 self.redirect('/newbj') 
                 
             elif end: # delete the game from data store and local cookies if quitting
@@ -103,12 +105,7 @@ class NewBlackjack(AppHandler):
                 user = Users.get_by_id(int(user_id))
                 game = BlackjackGames.get_by_id(int(game_id))
             
-                # if user doesn't have enough chips to make stated bet, reload betting page
-                chips = memcache.get('%s_chips' % user_id)
-                if not chips: chips = user.chips
                 g = bj.Game(chips)
-                if chips < bet:
-                    self.redirect('/newbj')
                 
                 # new shuffled deck is created in g,
                 # replace with current deck if current deck has >20 cards remaining
@@ -286,7 +283,7 @@ class InsuranceBlackjack(AppHandler):
             elif dtotal != 21 and ptotal < 21 and buy: # no dealer bj but has ins
                 self.redirect('/loseins')
             elif dtotal != 21 and ptotal < 21 and nobuy: # no dealer bj & no ins
-                self.redirect('/playbj')
+                self.redirect('/playbj?h=1')
             elif dtotal != 21 and ptotal == 21 and buy:
                 self.redirect('/resultsbj?p=21&d=%s&result=pblackjack&ins=lose' % dtotal)
             elif dtotal != 21 and dtotal == 21 and nobuy:
@@ -321,7 +318,7 @@ class LoseInsurance(AppHandler):
 
     # after accepting insurance loss message, continue playing game
     def post(self):
-        self.redirect('/playbj?h=0')
+        self.redirect('/playbj?h=1')
         
 #don't allow double/split for less right now
 # pass which hand the player is currently playing as a query parameter*******
@@ -436,7 +433,7 @@ class PlayBlackjack(AppHandler):
                 # if player has 21 or under, can continue playing else, immediately end game
                 ptotal = g.table.players[0].hand_sum[0]
                 if ptotal <= 21:
-                    self.redirect('/playbj?h=%s' % self.response.get('h'))
+                    self.redirect('/playbj?h=1')
                 if ptotal > 21:
                     dtotal = g.table.dealer.hand_sum[0]
                     self.redirect('/resultsbj?p=%s&d=%s&result=loss' % (ptotal, dtotal))
