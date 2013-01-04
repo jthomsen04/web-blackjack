@@ -97,6 +97,9 @@ class NewBlackjack(AppHandler):
         # validate game state and user to protect against cheating
         user_id = validate(self.request.cookies.get('user_id'))
         game_id = validate(self.request.cookies.get('game_id'))
+        
+        # pull user and chips from memcache and db
+        user = Users.get_by_id(int(user_id))
         chips = memcache.get('%s_chips' % user_id)
         if not chips: chips = user.chips
         
@@ -110,8 +113,7 @@ class NewBlackjack(AppHandler):
                 self.redirect('/')
                 
             elif play:
-                # pull user and game from data store
-                user = Users.get_by_id(int(user_id))
+                # pull game from data store
                 game = BlackjackGames.get_by_id(int(game_id))
             
                 g = bj.Game(chips)
