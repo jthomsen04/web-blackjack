@@ -1,3 +1,10 @@
+'''
+December 26, 2012
+Justin Thomsen
+
+Authentication module used for sign-in, sign-out, sign-up, and validation of user.
+'''
+
 from modules.base import AppHandler
 import re
 import random

@@ -1,3 +1,10 @@
+'''
+December 26, 2012
+Justin Thomsen
+
+AppHandler Handler for GAE using jinja2 templating. Inherited by all handlers in webapp.
+'''
+
 import jinja2
 import webapp2
 
