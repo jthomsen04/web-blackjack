@@ -40,20 +40,13 @@ class NewBlackjack(AppHandler):
             game_id = validate(self.request.cookies.get('game_id'))
             
             # get chips and deck from memcache if possible else from db
-            chips = memcache.get('%s_chips' % user_id)
             deck = memcache.get('%s_deck' % user_id)
             #print deck
             if not deck: deck = ['']
-            if not chips: chips = user.chips
+            chips = user.chips
             
-            message = 'Shuffling the deck!' if len(deck) < 20 else ''
-            if chips < 5.0:
-                chips += 500.0
-                user.chips += 500.0
-                user.chipresets += 1
-                user.put()
-                memcache.set('%s_chips' % user_id, chips, time=3600)
-                message += '\nYou ran out of chips! You have been given 500 more!'  
+            message = 'Shuffling the deck! ' if len(deck) < 20 else ''
+            maximum = chips if chips < 500.0 else 500
                       
             if not game_id: # create game if user does not already have one in progress
                 game = BlackjackGames(gameuser = user.username,
@@ -75,7 +68,8 @@ class NewBlackjack(AppHandler):
             else:   # continue if in the middle of a game
                 game = BlackjackGames.get_by_id(int(game_id))
                 
-            self.render('blackjack_newgame.html', username = user.username, chipcount = chips, message = message)
+            self.render('blackjack_newgame.html', username = user.username, chipcount = chips, 
+                        message = message, maximum = maximum)
         
         # if can't validate user, render casino_front_out to prompt for signup/login
         else:
@@ -95,11 +89,14 @@ class NewBlackjack(AppHandler):
         # validate game state and user to protect against cheating
         user_id = validate(self.request.cookies.get('user_id'))
         game_id = validate(self.request.cookies.get('game_id'))
-        chips = memcache.get('%s_chips' % user_id)
-        if not chips: chips = user.chips
+        
         
         if user_id and game_id:
-            if play and (not bet or float(bet) > chips): # cannot continue without submitting a bet
+            # pull user and chips from datastore
+            user = Users.get_by_id(int(user_id))
+            chips = user.chips
+            
+            if play and (not bet or float(bet) > float(chips)): # cannot continue without submitting a bet
                 self.redirect('/newbj') 
                 
             elif end: # delete the game from data store and local cookies if quitting
@@ -108,8 +105,7 @@ class NewBlackjack(AppHandler):
                 self.redirect('/')
                 
             elif play:
-                # pull user and game from data store
-                user = Users.get_by_id(int(user_id))
+                # pull game from data store
                 game = BlackjackGames.get_by_id(int(game_id))
             
                 g = bj.Game(chips)
@@ -161,7 +157,7 @@ class NewBlackjack(AppHandler):
                                     '_phand': playerhand,
                                     '_dhand': dealerhand,
                                     '_bet': playerbet,
-                                    '_chips': chips},
+                                    '_chips': float(chips)},
                                     key_prefix="%s" % user_id, time=3600)
                 
                 
@@ -254,7 +250,7 @@ class InsuranceBlackjack(AppHandler):
                 # decrease player chip count at time of insurance purchase
                 user.chips -= ins
                 chips -= ins
-                memcache.set('%s_chips' % user_id, chips, 3600)
+                memcache.set('%s_chips' % user_id, float(chips), 3600)
                 user.put()
                 
             # re-establish a game
@@ -460,7 +456,7 @@ class PlayBlackjack(AppHandler):
                     game.playerhand = playerhand
                     memcache.set_multi({'_bet': playerbet,
                                         '_phand': playerhand,
-                                        '_chips': chips},
+                                        '_chips': float(chips)},
                                         key_prefix='%s' % user_id, time=3600)
                     
                     user.chips = chips 
@@ -530,7 +526,7 @@ class ResultsBlackjack(AppHandler):
             
             if self.request.get('result') == 'win':
                 chips += playerbet * 2 # 1:1 payout + initial wager returned
-                memcache.set('%s_chips' % user_id, chips, time=3600)
+                memcache.set('%s_chips' % user_id, float(chips), time=3600)
                 
                 user.chips = chips 
                 user.bjwins += 1
@@ -544,7 +540,7 @@ class ResultsBlackjack(AppHandler):
                 payout = playerbet * 1.5
                 chips += playerbet + payout # 3:2 payout + initial wager returned
                 
-                memcache.set('%s_chips' % user_id, chips, time=3600)
+                memcache.set('%s_chips' % user_id, float(chips), time=3600)
                 
                 user.chips = chips
                 user.bjwins += 1
@@ -576,7 +572,7 @@ class ResultsBlackjack(AppHandler):
                 if self.request.get('ins') == 'win':
                     chips += playerbet
                     user.chips = chips
-                    memcache.set('%s_chips' % user_id, chips, time=3600)
+                    memcache.set('%s_chips' % user_id, float(chips), time=3600)
                     message = "The dealer has a blackjack! You win your insurance wager and gain %s chips." % (playerbet)
                 
                 user.bjlosses += 1
@@ -586,7 +582,7 @@ class ResultsBlackjack(AppHandler):
             # do not adjust any stats for push, refund original wager
             elif self.request.get('result') == 'push':
                 chips += playerbet
-                memcache.set('%s_chips' % user_id, chips, time=3600)
+                memcache.set('%s_chips' % user_id, float(chips), time=3600)
                 user.chips = chips
                 
                 message = "You have %s and the Dealer has %s. You push!" % (self.request.get('p'), self.request.get('d'))
@@ -595,7 +591,7 @@ class ResultsBlackjack(AppHandler):
                 if self.request.get('ins') == 'win':
                     chips += playerbet
                     user.chips = chips
-                    memcache.set('%s_chips' % user_id, chips, time=3600)
+                    memcache.set('%s_chips' % user_id, float(chips), time=3600)
                     message = "You push with the dealer. You win your insurance wager and gain %s chips." % (playerbet)
                 
                 chipcount = "Your wager of %s chips has been returned. You have %s chips." % (playerbet, chips)
@@ -615,4 +611,44 @@ class ResultsBlackjack(AppHandler):
     
     # redirect to new game screen after viewing results
     def post(self):
+        
+        game_id = validate(self.request.cookies.get('game_id'))
+        user_id = validate(self.request.cookies.get('user_id'))
+        
+        # validate game state and user to protect against cheating
+        if game_id and user_id:
+            user = Users.get_by_id(int(user_id))
+            game = BlackjackGames.get_by_id(int(game_id))
+            chips = memcache.get('%s_chips' % user_id)
+            if not chips: chips = user.chips
+            if chips < 5.0:
+                self.redirect('/resetchips')
+            else:
+                self.redirect('/newbj')
+        else:
+            self.redirect('/')
+
+class ResetChips(AppHandler):
+    def get(self):
+        game_id = validate(self.request.cookies.get('game_id'))
+        user_id = validate(self.request.cookies.get('user_id'))
+        
+        # validate game state and user to protect against cheating
+        if game_id and user_id:
+            user = Users.get_by_id(int(user_id))
+            game = BlackjackGames.get_by_id(int(game_id))
+            chips = memcache.get('%s_chips' % user_id)
+            if not chips: chips = user.chips
+            chips += 500.0
+            user.chips += 500.0
+            user.chipresets += 1
+            user.put()
+            memcache.set('%s_chips' % user_id, float(chips), time=3600)
+            message = 'You ran out of chips! You have been given 500 more!'  
+            
+            self.render('chips_reset.html', username = user.username, 
+                                                chips = chips)
+            
+    def post(self):
         self.redirect('/newbj')
+            

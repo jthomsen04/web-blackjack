@@ -53,6 +53,7 @@ app = WSGIApplication([
         Route(r'/insurancebj', handler='modules.game.InsuranceBlackjack', name='insurancebj'),
         Route(r'/loseins', handler='modules.game.LoseInsurance', name='loseins'),
         Route(r'/playbj', handler='modules.game.PlayBlackjack', name='playbj'),
+        Route(r'/resetchips', handler='modules.game.ResetChips', name='resetchips'),
         Route(r'/resultsbj', handler='modules.game.ResultsBlackjack', name='resultsbj')], 
         debug=True)
 '''

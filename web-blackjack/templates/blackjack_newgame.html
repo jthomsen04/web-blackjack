@@ -14,8 +14,8 @@
 		<form method="post">
 			{{message}}<br /><br />
 			You have {{chipcount}} chips.<br />
-			Enter your bet (Minimum 5, Maximum 500): 
-			<input type="number" name="quantity" min="5" max="500">
+			Enter your bet (Minimum 5, Maximum {{maximum}}): 
+			<input type="number" name="quantity" min="5" max="{{maximum}}">
 			<br />
   			<input type="submit" value="Place Bet" name="play">
   			<input type="submit" value="Quit" name="quit">
