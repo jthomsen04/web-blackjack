@@ -47,7 +47,7 @@ class NewBlackjack(AppHandler):
             if not chips: chips = user.chips
             
             message = 'Shuffling the deck!' if len(deck) < 20 else ''
-            maximum = chips if chips < 500.0 else 500
+            
             if chips < 5.0:
                 chips += 500.0
                 user.chips += 500.0
@@ -55,7 +55,8 @@ class NewBlackjack(AppHandler):
                 user.put()
                 memcache.set('%s_chips' % user_id, chips, time=3600)
                 message += '\nYou ran out of chips! You have been given 500 more!'  
-                      
+            
+            maximum = chips if chips < 500.0 else 500          
             if not game_id: # create game if user does not already have one in progress
                 game = BlackjackGames(gameuser = user.username,
                                       gameuserid = int(user_id),
