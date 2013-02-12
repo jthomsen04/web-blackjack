@@ -141,11 +141,11 @@ class NewBlackjack(AppHandler):
                     playerhand = [card for card in playerhand if card != '']
                     dealerhand = [card for card in dealerhand if card != '']
                     if len(playerhand) == 1:
-                        g.hit_hand(0, 0)
+                        g.hit(0, 0)
                         deck = deck[1:]
                         playerhand += [g.table.players[0].cards[0][1].name]
                     if len(dealerhand) == 1:
-                        g.hit_hand(0)
+                        g.hit(0)
                         deck = deck[1:]
                         dealerhand += [g.table.dealer.cards[0][1].name]
                         
