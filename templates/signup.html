@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Casino Registration</title>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/casinostyle.css" />
+	</head>
+	
+	<body>
+		<div id="wrapper">
+			<div class="navigation"><a href=/ >Casino Front Page</a></div>
+			<br />
+			<br />
+			<br />
+			<div id="bufferspace33"></div>
+			<form method="post" id="front">
+				<div id="messagewrap">
+					<span id="message">
+						Please choose a username and a password.<br /><br />
+						Username: <input type="text" name="username" value="{{ username }}" /><br />
+						Password: <input type="password" name="password" value="" /><br />
+						Verify Password:<input type="password" name="verify" value="" /><br />
+						Email (optional):<input type="text" name="email" value="{{ email }}" /><br />
+						<div style="color:red">{{ error }}</div>
+						<input type="submit" value="Submit"/>
+					</span>
+				</div>
+			</form>
+		</div>
+	</body>
+</html>

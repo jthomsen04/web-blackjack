@@ -1,0 +1,8 @@
+December 26, 2012
+Author: Justin Thomsen
+
+This is an in-development blackjack game running on GAE, making use of GQL database structures and memcache. The game can be found at web-blackjack.appspot.com and is optimized for playing within the Chrome browser.
+
+The web-app version is built on top of an object-oriented initial version designed specifically to be played in a terminal window. This version (blackjack.py) is imported to the web app code (game.py) which is run by the routing path to blackjack in the webapp.
+
+Currently, all features except for splitting are supported by the game, although the Alpha Build of Web-Blackjack  Version 3 shows some features of how splitting is being implemented and tracked by the game.
